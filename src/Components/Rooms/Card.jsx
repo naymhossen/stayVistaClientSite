@@ -7,7 +7,7 @@ const Card = ({ room }) => {
 
   return (
     <>
-      <Link to={`/room/${_id}`} className="col-span-1 cursor-pointer group">
+      <Link to={`/roomDetails/${_id}`} className="col-span-1 cursor-pointer group">
         <div className="flex flex-col gap-2 w-full">
           <div
             className="
