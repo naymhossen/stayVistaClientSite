@@ -3,11 +3,20 @@ import avatarImage from "../../../public/assets/images/placeholder.jpg";
 import { Link } from "react-router-dom";
 import { AiOutlineMenu } from "react-icons/ai";
 import useAuth from "../../Hooks/useAuth";
+import toast, { Toaster } from "react-hot-toast";
 
 const MenuDropdown = () => {
-  const { user } = useAuth();
+  const { user, logOut } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    logOut()
+    .then( () => {
+      toast.success('Logout Success')
+    })
+    .catch((err) => console.log(err))
+  }
 
   return (
     <div className="relative">
@@ -15,7 +24,9 @@ const MenuDropdown = () => {
         {/* Become A Host btn */}
         <div className="hidden md:block">
           <button className="disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 py-3 px-4 text-sm font-semibold rounded-full  transition">
-            Host your home
+            {
+              user ? user.displayName : 'Host your home'
+            }
           </button>
         </div>
         {/* Dropdown btn */}
@@ -46,16 +57,38 @@ const MenuDropdown = () => {
             >
               Home
             </Link>
-
-            <Link to="/login" className="px-4 py-3 hover:bg-neutral-100 transition font-semibold">
-              Login
+            {user ? (
+              <>
+              <Link
+              to="dashboard"
+              className="block p-2 hover:bg-neutral-100 transition font-semibold"
+            >
+              Dashboard
             </Link>
-            <Link to="/signUp" className="px-4 py-3 hover:bg-neutral-100 transition font-semibold">
-              Sign Up
-            </Link>
+              <h2 
+              onClick={handleLogout}
+              className="px-4 py-3 hover:bg-neutral-100 transition font-semibold">Log Out</h2>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-4 py-3 hover:bg-neutral-100 transition font-semibold"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signUp"
+                  className="px-4 py-3 hover:bg-neutral-100 transition font-semibold"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
+      <Toaster />
     </div>
   );
 };

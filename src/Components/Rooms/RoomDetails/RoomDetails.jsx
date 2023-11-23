@@ -1,27 +1,15 @@
-import { useEffect, useState } from "react";
+import { useLoaderData, useParams } from "react-router-dom";
 import Container from "../../../Shared/Container/Container";
-import { useParams } from "react-router-dom";
-import Loader from "../../../Shared/Loader";
 import RoomHeader from "./RoomHeader";
 import RoomInfo from "./RoomInfo";
 import RoomReservation from "./RoomReservation";
 
 const RoomDetails = () => {
-  const [rooms, setRooms] = useState({});
-  const [loading, setLoading] = useState(false);
-  const { id } = useParams();
+  const room = useLoaderData();
+  
+  const {id} = useParams();
 
-  useEffect(() => {
-    setLoading(true);
-    fetch("../../../public/rooms.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const singleCard = data.find((details) => details._id === id);
-        setRooms(singleCard);
-      });
-  }, [id]);
-
-  if (loading) <Loader />;
+  const rooms = room.find( item => item._id === id)
 
   return (
     <Container>
@@ -36,7 +24,7 @@ const RoomDetails = () => {
           <div>
             <RoomInfo rooms={rooms} />
           </div>
-          <div className="order-first md:order-last w-10/12 mx-auto">
+          <div className="order-first md:order-last w-10P/12 mx-auto">
             {/* Calender Part */}
             <RoomReservation rooms={rooms} />
           </div>

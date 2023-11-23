@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import Heading from "../../Shared/Heading";
 import Container from "../../Shared/Container/Container";
 import Loader from "../../Shared/Loader";
+import { getALLRoms } from "../../API/Rooms";
 
 const Rooms = () => {
   const [rooms, setRooms] = useState([]);
@@ -13,8 +14,7 @@ const Rooms = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("../../../public/rooms.json")
-      .then((res) => res.json())
+    getALLRoms()
       .then((data) => {
         if (category) {
           const filterValue = data.filter((room) => room.category === category);
@@ -25,6 +25,7 @@ const Rooms = () => {
         }
       });
   }, [category]);
+  // console.log(rooms);
 
   if (loading) <Loader />;
   return (
@@ -33,7 +34,7 @@ const Rooms = () => {
         {rooms && rooms.length > 0 ? (
           <div className="pt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
             {rooms.map((room) => (
-              <Card key={room._id} room={room} />
+              <Card key={room.category} room={room} />
             ))}
           </div>
         ) : (
@@ -45,6 +46,5 @@ const Rooms = () => {
     </>
   );
 };
-
 
 export default Rooms;

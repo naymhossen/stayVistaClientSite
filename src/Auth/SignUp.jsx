@@ -1,22 +1,47 @@
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../Hooks/useAuth";
 import { FcGoogle } from "react-icons/fc";
+import { ImSpinner10 } from "react-icons/im";
+import { imageUpload } from "../API/Utils";
+import { jwtSignUp, saveUser } from "../API/Auth";
+import toast, { Toaster } from "react-hot-toast";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const { createUser, updateUserProfile, signInWithGoogle, loading } = useAuth();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.target;
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
-    // const image = form.image.files[0]
-    console.log(name, email, password);
+    const image = form.image.files[0];
 
+    try {
+      const imageData = await imageUpload(image);
+      // console.log(imageData.data.display_url);
+      const result = await createUser(email, password);
+      const databaseInfo = await saveUser(result?.user);
+      console.log(databaseInfo);
+
+      await updateUserProfile(name, imageData?.data?.display_url);
+
+      /// Get JWT Token In database
+      await jwtSignUp(result?.user?.email);
+      toast.success("User Account Create Success!");
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.message);
+    }
   };
 
+  const handleGoogleSignIn = async () => {
+    const result = await signInWithGoogle();
+    await jwtSignUp(result?.user?.email);
+    navigate("/");
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -85,17 +110,17 @@ const SignUp = () => {
 
           <div>
             <button type="submit" className="bg-rose-500 w-full rounded-md py-3 text-white">
-              Continue
+              {loading ? <ImSpinner10 className="animate-spin m-auto" /> : "Continue"}
             </button>
           </div>
         </form>
         <div className="flex items-center pt-4 space-x-1">
           <div className="flex-1 h-px sm:w-16 dark:bg-gray-700"></div>
-          <p className="px-3 text-sm dark:text-gray-400">Signup with social accounts</p>
+          <p className="px-3 text-sm dark:text-gray-400">Sign up with social accounts</p>
           <div className="flex-1 h-px sm:w-16 dark:bg-gray-700"></div>
         </div>
         <div
-          // onClick={handleGoogleSignIn}
+          onClick={handleGoogleSignIn}
           className="flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer"
         >
           <FcGoogle className=" text-2xl" />
@@ -110,6 +135,7 @@ const SignUp = () => {
           .
         </p>
       </div>
+      <Toaster />
     </div>
   );
 };

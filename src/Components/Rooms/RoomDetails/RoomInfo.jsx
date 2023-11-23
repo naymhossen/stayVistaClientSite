@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 const RoomInfo = ({ rooms }) => {
-  console.log(rooms);
+  // console.log(rooms);
   const { guests, bedrooms, bathrooms, description } = rooms || {};
   return (
     <div className="col-span-4 flex flex-col gap-8">
